@@ -1,0 +1,157 @@
+{
+    "id": "localstack",
+    "version": "0.1.0",
+    "name": "LocalStack Docker-outside-of-Docker",
+    "description": "A template to manage LocalStack in DooD",
+    "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack",
+    "licenseURL": "https://github.com/localstack/devcontainer-template/blob/main/LICENSE",
+    "options": {
+        "imageVariant": {
+            "type": "string",
+            "description": "Debian version (use bullseye or jammy on local arm64/Apple Silicon):",
+            "proposals": [
+                "jammy",
+                "focal",
+                "bullseye",
+                "buster"
+            ],
+            "default": "jammy"
+        },
+        "awslocal": {
+            "type": "boolean",
+            "description": "Install LocalStack wrapper for AWS CLI:",
+            "default": "false"
+        },
+        "cdklocal": {
+            "type": "boolean",
+            "description": "Install LocalStack wrapper for CDK:",
+            "default": "false"
+        },
+        "pulumilocal": {
+            "type": "boolean",
+            "description": "Install LocalStack wrapper for Pulumi:",
+            "default": "false"
+        },
+        "samlocal": {
+            "type": "boolean",
+            "description": "Install LocalStack wrapper for AWS SAM CLI:",
+            "default": "false"
+        },
+        "tflocal": {
+            "type": "boolean",
+            "description": "Install LocalStack wrapper for Terraform:",
+            "default": "false"
+        },
+        "logLevel": {
+            "type": "string",
+            "description": "Set LocalStack log level:",
+            "enum": [
+                "trace",
+                "trace-internal",
+                "debug",
+                "info",
+                "warn",
+                "error",
+                "warning"
+            ],
+            "default": "info"
+        },
+        "authToken": {
+            "type": "string",
+            "descripiton": "LocalStack authentication token:",
+            "default": ""
+        },
+        "host": {
+            "type": "string",
+            "descripiton": "LocalStack hostname:",
+            "proposals": [
+                "localhost.localstack.cloud:4566"
+            ],
+            "default": "localhost.localstack.cloud:4566"
+        },
+        "debug": {
+            "type": "boolean",
+            "descripiton": "Enable LocalStack debugging:",
+            "default": "false"
+        },
+        "persistence": {
+            "type": "boolean",
+            "descripiton": "Enable persistence in LocalStack:",
+            "default": "false"
+        },
+        "usePro": {
+            "type": "boolean",
+            "descripiton": "Enable LocalStack Pro:",
+            "default": "false"
+        },
+        "version": {
+            "type": "string",
+            "descripiton": "Use LocalStack version:",
+            "proposals": [
+                "latest",
+                "3.5.0",
+                "3.4.0",
+                "3.3.0",
+                "3.2.0",
+                "3.1.0",
+                "3.0.2",
+                "3.0.1"
+            ],
+            "default": "latest"
+        },
+        "loadPods": {
+            "type": "string",
+            "descripiton": "Load Cloud Pods at start-up (comma-separated list):",
+            "default": ""
+        },
+        "volumeName": {
+            "type": "string",
+            "descripiton": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
+            "default": "./volume"
+        },
+        "enforceIam": {
+            "type": "boolean",
+            "descripiton": "Enforce IAM:",
+            "default": "false"
+        },
+        "defaultRegion": {
+            "type": "string",
+            "descripiton": "Default AWS region:",
+            "proposals": [
+                "us-east-1",
+                "us-east-2",
+                "us-west-1",
+                "us-west-2",
+                "af-south-1",
+                "ap-east-1",
+                "ap-south-1",
+                "ap-south-2",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-southeast-3",
+                "ap-southeast-4",
+                "ap-northeast-1",
+                "ap-northeast-2",
+                "ap-northeast-3",
+                "ca-central-1",
+                "ca-west-1",
+                "eu-central-1",
+                "eu-central-2",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-west-3",
+                "eu-south-1",
+                "eu-south-2",
+                "eu-north-1",
+                "il-central-1",
+                "me-south-1",
+                "me-central-1",
+                "sa-east-1"
+            ],
+            "default": "us-east-1"
+        }
+    },
+    "platforms": [
+        "Any"
+    ]
+}
