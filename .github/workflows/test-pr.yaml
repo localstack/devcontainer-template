@@ -1,6 +1,11 @@
 name: "CI - Test Templates"
 on:
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - .gitkeep
+      - .gitignore
 
 jobs:
   detect-changes:
