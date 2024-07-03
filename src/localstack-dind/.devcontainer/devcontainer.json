@@ -1,0 +1,36 @@
+{
+	"name": "LocalStack DinD setup",
+	"image": "mcr.microsoft.com/devcontainers/base:${templateOption:imageVariant}",
+
+	"remoteEnv": {
+		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required for Pro, not processed via template due to security reasons
+		// LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+		"ACTIVATE_PRO": "${templateOption:usePro}",
+		"DEBUG": "${templateOption:debug}",
+		"LS_LOG": "${templateOption:logLevel}",
+		"PERSISTENCE": "${templateOption:persistence}",
+		"AWS_ENDPOINT_URL": "http://${templateOption:host}",
+		"LOCALSTACK_HOST": "${templateOption:host}",
+		"AUTO_LOAD_POD": "${templateOption:loadPods}",
+		"IAM_ENFORCE": "${templateOption:enforceIam}",
+		"AWS_REGION": "${templateOption:defaultRegion}",
+		"AWS_DEFAULT_REGION": "${templateOption:defaultRegion}"
+	},
+
+	// 👇 Features to add to the Dev Container. More info: https://containers.dev/implementors/features.
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
+			"awslocal": ${templateOption:awslocal},
+			"cdklocal": ${templateOption:cdklocal},
+			"pulumilocal": ${templateOption:pulumilocal},
+			"samlocal": ${templateOption:samlocal},
+			"tflocal": ${templateOption:tflocal}
+		}
+	},
+
+	// 👇 Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "${templateOption:startup} && localstack start -d",
+	"mounts": [{ "source": "dind-var-lib-docker", "target": "/var/lib/docker", "type": "volume" }] // to persist build data and images
+}
