@@ -21,7 +21,13 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
         for OPTION in "${OPTIONS[@]}"
         do
             OPTION_KEY="\${templateOption:$OPTION}"
+            if [ -f inputs.json ] ; then
+                OPTION_VALUE=$(jq -r ".${OPTION}" inputs.json)
+            fi
+            
+            if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
             OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
+            fi
 
             if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
                 echo "Template '${TEMPLATE_ID}' is missing a default value for option '${OPTION}'"
@@ -31,6 +37,8 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
             echo "(!) Replacing '${OPTION_KEY}' with '${OPTION_VALUE}'"
             OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
             find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
+            
+            unset OPTION_VALUE
         done
     fi
 fi
