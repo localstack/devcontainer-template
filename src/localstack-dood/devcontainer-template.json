@@ -56,11 +56,6 @@
             ],
             "default": "info"
         },
-        "authToken": {
-            "type": "string",
-            "descripiton": "LocalStack authentication token:",
-            "default": ""
-        },
         "host": {
             "type": "string",
             "descripiton": "LocalStack hostname:",
@@ -102,7 +97,7 @@
         "loadPods": {
             "type": "string",
             "descripiton": "Load Cloud Pods at start-up (comma-separated list):",
-            "default": ""
+            "default": " "
         },
         "volumePath": {
             "type": "string",
