@@ -1,8 +1,39 @@
 #!/bin/bash
 TEMPLATE_ID="$1"
+ALL_RESULTS="  ================== 📋 TEST REPORT ==================\n"
 set -e
 
+function reportAllScenarioResults {
+    if [ ${2} -eq 0 ] ; then
+        RES="✅ Passed:\t"
+    else
+        RES="❌ Failed:\t"
+    fi
+    ALL_RESULTS="$ALL_RESULTS\n$RES'${1}'"
+}
+
+function cleanup {
+    # Clean up
+    echo "🧹 Cleaning up..."
+    CONTAINER_ID=$(docker container ls -f "label=${2}" -q)
+    docker rm -f ${CONTAINER_ID} > /dev/null && echo "🧹 Removing container ${CONTAINER_ID}"
+    sudo rm -rf "${1}" && echo "🧹 Removing scenario files ${SCENARIO}"
+}
+
+echo "⏱️ Scenario tests - ${TEMPLATE_ID}"
+echo -n "(*) Collecting scenarios..."
+
+if ! [ -f test/${TEMPLATE_ID}/scenarios.json ]; then
+    echo
+    echo "(!) No scenarios collected. Exiting. Bye! 👋"
+    exit
+fi
+
 SCENARIOS=( $(jq -r 'keys[]' test/${TEMPLATE_ID}/scenarios.json) )
+echo "found ${#SCENARIOS[@]}"
+echo
+printf '%s\n' "${SCENARIOS[@]}"
+echo 
 
 type devcontainer > /dev/null
 if [ $? -ne 0 ] ; then
@@ -12,6 +43,18 @@ if [ $? -ne 0 ] ; then
 fi
 
 for SCENARIO in ${SCENARIOS[@]}; do
-    $(dirname $0)/build.sh ${TEMPLATE_ID} ${SCENARIO}
+    set +e
+    ID_LABEL="test-container=${TEMPLATE_ID}-${SCENARIO}"
+    SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
+
+    echo
+    echo "🔄  Running scenario - ${SCENARIO}"
+    $(dirname $0)/build.sh ${TEMPLATE_ID} ${SCENARIO} && \
     $(dirname $0)/test.sh ${TEMPLATE_ID} ${SCENARIO}
+    reportAllScenarioResults ${SCENARIO} $?
+    cleanup ${SRC_DIR} ${ID_LABEL}
+    echo
+    set -e
 done
+
+echo -e "$ALL_RESULTS"

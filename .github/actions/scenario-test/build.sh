@@ -7,6 +7,7 @@ set -e
 shopt -s dotglob
 
 function merge {
+    echo "(*) Generating config files"
     # # Configure templates only if `devcontainer-template.json` contains the `options` property.
     OPTION_PROPERTY=( $(jq -r '.options' devcontainer-template.json) )
 
@@ -46,7 +47,7 @@ function merge {
 }
 
 function create_scenario {
-    SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
+    local SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
     cp -R "src/${TEMPLATE_ID}" "${SRC_DIR}"
 
     TEST_DIR="test/${TEMPLATE_ID}"
@@ -64,9 +65,10 @@ function create_scenario {
 
     popd
 
-    echo "Building Dev Container"
+    echo
+    echo "🏗️ Building Dev Container - ${SCENARIO}"
     ID_LABEL="test-container=${TEMPLATE_ID}-${SCENARIO}"
-    devcontainer up --id-label ${ID_LABEL} --workspace-folder "${SRC_DIR}"
+    devcontainer up --id-label ${ID_LABEL} --workspace-folder "${SRC_DIR}" && echo "🚀 Launched container."
 }
 
 create_scenario
