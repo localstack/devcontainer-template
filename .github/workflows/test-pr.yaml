@@ -20,7 +20,7 @@ jobs:
             localstack-dind: ./**/localstack-dind/**
             localstack-dood: ./**/localstack-dood/**
 
-  test:
+  smoke-test:
     needs: [detect-changes]
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -35,6 +35,16 @@ jobs:
         uses: ./.github/actions/smoke-test
         with:
           template: "${{ matrix.templates }}"
+
+  scenario-test:
+    needs: [detect-changes]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        templates: ${{ fromJSON(needs.detect-changes.outputs.templates) }}
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Scenario test(s) for '${{ matrix.templates }}'
         id: scenario_test
