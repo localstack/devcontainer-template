@@ -29,6 +29,7 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
             OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
             fi
 
+            # For empty default values use " "
             if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
                 echo "Template '${TEMPLATE_ID}' is missing a default value for option '${OPTION}'"
                 exit 1

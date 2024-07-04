@@ -1,0 +1,17 @@
+name: 'Scenario test(s)'
+inputs:
+  template:
+    description: 'Template to test'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout main
+      id: checkout_release
+      uses: actions/checkout@v3
+
+    - name: Test scenario templates
+      id: test_template
+      shell: bash
+      run: ${{ github.action_path }}/controller.sh ${{ inputs.template }}

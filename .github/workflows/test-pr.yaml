@@ -35,3 +35,9 @@ jobs:
         uses: ./.github/actions/smoke-test
         with:
           template: "${{ matrix.templates }}"
+
+      - name: Scenario test(s) for '${{ matrix.templates }}'
+        id: scenario_test
+        uses: ./.github/actions/scenario-test
+        with:
+          template: "${{ matrix.templates }}"

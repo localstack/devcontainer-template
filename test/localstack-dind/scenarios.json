@@ -1,0 +1,12 @@
+{
+    "startup_with_awslocal": {
+        "awslocal": true,
+        "tflocal": true,
+        "startup": true
+    },
+    "no_startup_without_awslocal": {
+        "awslocal": false,
+        "tflocal": false,
+        "startup": false
+    }
+}
