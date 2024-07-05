@@ -31,6 +31,6 @@
 	},
 
 	// 👇 Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "${templateOption:startup} && localstack start -d || true",
+	"postCreateCommand": "type localstack; ${templateOption:startup} && localstack start -d || true",
 	"mounts": [{ "source": "dind-var-lib-docker", "target": "/var/lib/docker", "type": "volume" }] // to persist build data and images
 }
