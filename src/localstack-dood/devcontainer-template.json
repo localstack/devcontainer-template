@@ -13,7 +13,7 @@
                 "jammy",
                 "focal",
                 "bullseye",
-                "buster"
+                "bookworm"
             ],
             "default": "jammy"
         },

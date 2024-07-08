@@ -1,7 +1,7 @@
 {
     "id": "localstack",
     "version": "0.1.0",
-    "name": "LocalStack DinD",
+    "name": "LocalStack Docker-in-Docker",
     "description": "A template to manage LocalStack in DinD via CLI",
     "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack",
     "licenseURL": "https://github.com/localstack/devcontainer-template/blob/main/LICENSE",
@@ -13,7 +13,7 @@
                 "jammy",
                 "focal",
                 "bullseye",
-                "buster"
+                "bookworm"
             ],
             "default": "jammy"
         },
