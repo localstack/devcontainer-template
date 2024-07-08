@@ -6,43 +6,64 @@ set -e
 
 shopt -s dotglob
 
+function remove_comments {
+    sed -i -re 's/^(.*)[[:blank:]]+(\/\/.*)$/\1/' ${1}
+}
+
 function merge {
+    cp .devcontainer/devcontainer.json .devcontainer/devcontainer.json.bak
+    remove_comments .devcontainer/devcontainer.json.bak
+
+    if [ -f inputs.json ] ; then
+        jq -s ".[0] * .[1]" .devcontainer/devcontainer.json.bak ./inputs.json > .devcontainer/devcontainer.json
+        cp -f .devcontainer/devcontainer.json .devcontainer/devcontainer.json.bak
+    fi
+
+    jq -s ".[0] * .[1].${SCENARIO}" .devcontainer/devcontainer.json.bak test-project/scenarios.json > .devcontainer/devcontainer.json
+    cp -f .devcontainer/devcontainer.json .devcontainer/devcontainer.json.bak
+    
+    # Clean up unneeded keys
+    printf -v tmp_str '.%s,' "${OPTIONS[@]}"
+    jq "del($(echo "${tmp_str%,}"))" .devcontainer/devcontainer.json.bak > .devcontainer/devcontainer.json
+
+    rm .devcontainer/devcontainer.json.bak
+}
+
+function gen_config {
     echo "(*) Generating config files"
-    # # Configure templates only if `devcontainer-template.json` contains the `options` property.
-    OPTION_PROPERTY=( $(jq -r '.options' devcontainer-template.json) )
+    # Configure templates only if `devcontainer-template.json` contains the `options` property.
+    OPTIONS=( $(jq -r '.options | keys[]' devcontainer-template.json) )
 
-    if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then  
-        OPTIONS=( $(jq -r '.options | keys[]' devcontainer-template.json) )
+    if [ "${OPTIONS[0]}" != "" ] && [ "${OPTIONS[0]}" != "null" ] ; then
+        echo "(!) Configuring template options for '${TEMPLATE_ID}-${SCENARIO}'"
+        for OPTION in "${OPTIONS[@]}"
+        do
+            OPTION_KEY="\${templateOption:$OPTION}"
 
-        if [ "${OPTIONS[0]}" != "" ] && [ "${OPTIONS[0]}" != "null" ] ; then
-            echo "(!) Configuring template options for '${TEMPLATE_ID}-${SCENARIO}'"
-            for OPTION in "${OPTIONS[@]}"
-            do
-                OPTION_KEY="\${templateOption:$OPTION}"
+            OPTION_VALUE=$( jq -r ".${SCENARIO}.${OPTION}" test-project/scenarios.json)
 
-                OPTION_VALUE=$( jq -r ".${SCENARIO}.${OPTION}" test-project/scenarios.json)
-
-                if ( [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ) && [ -f inputs.json ] ; then
-                    OPTION_VALUE=$(jq -r ".${OPTION}" inputs.json)
-                fi
-                
-                if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
+            if ( [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ) && [ -f inputs.json ] ; then
+                OPTION_VALUE=$(jq -r ".${OPTION}" inputs.json)
+            fi
+            
+            if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
                 OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
-                fi
+            fi
 
-                # For empty default values use " "
-                if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
-                    echo "Template '${TEMPLATE_ID}-${SCENARIO}' is missing a default value for option '${OPTION}'"
-                    exit 1
-                fi
+            # For empty default values use " "
+            if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
+                echo "Template '${TEMPLATE_ID}-${SCENARIO}' is missing a default value for option '${OPTION}'"
+                exit 1
+            fi
 
-                echo "(!) Replacing '${OPTION_KEY}' with '${OPTION_VALUE}'"
-                OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
-                find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
-                
-                unset OPTION_VALUE
-            done
-        fi
+            echo "(!) Replacing '${OPTION_KEY}' with '${OPTION_VALUE}'"
+            OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
+            find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
+            
+            unset OPTION_VALUE
+        done
+        
+        merge
     fi
 }
 
@@ -61,7 +82,7 @@ function create_scenario {
 
     pushd "${SRC_DIR}"
 
-    merge
+    gen_config
 
     popd
 
