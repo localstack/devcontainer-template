@@ -12,6 +12,9 @@
 			]
 		}
 	},
-	"postCreateCommand": "npm install -g @devcontainers/cli",
-	"mounts": [{ "source": "dind-var-lib-docker", "target": "/var/lib/docker", "type": "volume" }] // to persist build data and images
+	"remoteEnv": {
+		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}"  // required for Pro, not processed via template due to security reasons
+	},
+	"postCreateCommand": "npm install -g @devcontainers/cli"
 }
