@@ -12,7 +12,7 @@ check() {
     shift
     echo -e "\n🧪 Testing $LABEL"
     eval $@
-    if [ $? -eq 0 ]; then 
+    if [ $? -eq 0 ]; then
         echo "✅  Passed!"
         return 0
     else

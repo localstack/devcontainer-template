@@ -1,12 +1,46 @@
 {
-    "startup_with_awslocal": {
+    "tools_no_startup_on_focal": {
+        "features": {
+            "ghcr.io/devcontainers/features/node:1": {}
+        },
+        "imageVariant": "focal",
         "awslocal": true,
+        "cdklocal": true,
+        "pulumilocal": true,
+        "samlocal": true,
         "tflocal": true,
-        "startup": true
-    },
-    "no_startup_without_awslocal": {
-        "awslocal": false,
-        "tflocal": false,
         "startup": false
+    },
+    "debug_mode_on_bookworm": {
+        "imageVariant": "bookworm",
+        "debug": true,
+        "logLevel": "trace"
+    },
+    "use_pro_and_pod": {
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "usePro": true,
+        "awslocal": true,
+        "loadPods": "devcontainer-use_pro_and_pod"
+    },
+    "persistence_custom_volume_with_3_3_0": {
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "usePro": true,
+        "awslocal": true,
+        "version": "3.3.0",
+        "persistence": true,
+        "volumePath": "./volume"
+    },
+    "custom_region_with_iam_enforce": {
+        "awslocal": true,
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "defaultRegion": "eu-central-1",
+        "enforceIam": true,
+        "usePro": true
     }
 }

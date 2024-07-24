@@ -56,14 +56,6 @@
             ],
             "default": "info"
         },
-        "host": {
-            "type": "string",
-            "descripiton": "LocalStack hostname:",
-            "proposals": [
-                "localhost.localstack.cloud:4566"
-            ],
-            "default": "localhost.localstack.cloud:4566"
-        },
         "debug": {
             "type": "boolean",
             "descripiton": "Enable LocalStack debugging:",
@@ -102,7 +94,7 @@
         "volumePath": {
             "type": "string",
             "descripiton": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
-            "default": "./volume"
+            "default": "./.volume"
         },
         "enforceIam": {
             "type": "boolean",

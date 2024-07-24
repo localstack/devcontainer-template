@@ -1,13 +1,14 @@
 #!/bin/bash
 TEMPLATE_ID="$1"
 SCENARIO="$2"
+SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
 
 set -e
 
 shopt -s dotglob
 
 function remove_comments {
-    sed -i -re 's/^(.*)[[:blank:]]+(\/\/.*)$/\1/' ${1}
+    sed -i -re 's/[[:blank:]]*(\/\/\s.*)//' ${1}
 }
 
 function merge {
@@ -60,6 +61,10 @@ function gen_config {
             OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
             find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
             
+            if [ "${OPTION}" == "volumePath" ] ; then
+                mkdir -p ${SRC_DIR}/${OPTION_VALUE}
+            fi
+
             unset OPTION_VALUE
         done
         
@@ -68,7 +73,6 @@ function gen_config {
 }
 
 function create_scenario {
-    local SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
     cp -R "src/${TEMPLATE_ID}" "${SRC_DIR}"
 
     TEST_DIR="test/${TEMPLATE_ID}"

@@ -17,7 +17,9 @@ function cleanup {
     # Clean up
     echo "🧹 Cleaning up..."
     CONTAINER_ID=$(docker container ls -f "label=${2}" -q)
-    docker rm -f ${CONTAINER_ID} > /dev/null && echo "🧹 Removing container ${CONTAINER_ID}"
+    if [ "${CONTAINER_ID:-x}" != "x" ]; then
+        docker rm -f "${CONTAINER_ID}" > /dev/null && echo "🧹 Removing container ${CONTAINER_ID}"
+    fi
     sudo rm -rf "${1}" && echo "🧹 Removing scenario files ${SCENARIO}"
 }
 
