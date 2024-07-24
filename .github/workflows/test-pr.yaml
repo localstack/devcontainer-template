@@ -31,6 +31,8 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Smoke test for '${{ matrix.templates }}'
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         id: smoke_test
         uses: ./.github/actions/smoke-test
         with:
@@ -47,6 +49,8 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Scenario test(s) for '${{ matrix.templates }}'
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         id: scenario_test
         uses: ./.github/actions/scenario-test
         with:
