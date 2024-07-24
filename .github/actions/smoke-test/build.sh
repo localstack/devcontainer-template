@@ -39,6 +39,10 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
             OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
             find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
             
+            if [ "${OPTION}" == "volumePath" ] ; then
+                mkdir -p ${SRC_DIR}/${OPTION_VALUE}
+            fi
+
             unset OPTION_VALUE
         done
     fi
