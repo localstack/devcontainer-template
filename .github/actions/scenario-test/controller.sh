@@ -1,6 +1,7 @@
 #!/bin/bash
 TEMPLATE_ID="$1"
 ALL_RESULTS="  ================== 📋 TEST REPORT ==================\n"
+EXIT_CODE=0
 
 set +e
 
@@ -9,6 +10,7 @@ function reportAllScenarioResults {
         RES="✅ Passed:\t"
     else
         RES="❌ Failed:\t"
+        EXIT_CODE=1
     fi
     ALL_RESULTS="$ALL_RESULTS\n$RES'${1}'"
 }
@@ -69,4 +71,5 @@ for SCENARIO in ${SCENARIOS[@]}; do
     echo
 done
 
-echo -e "$ALL_RESULTS"
+echo -e "${ALL_RESULTS}"
+exit ${EXIT_CODE}
