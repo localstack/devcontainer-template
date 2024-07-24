@@ -1,9 +1,9 @@
 {
-    "tools_no_startup_on_focal": {
+    "tools_no_startup": {
         "features": {
             "ghcr.io/devcontainers/features/node:1": {}
         },
-        "imageVariant": "focal",
+        "imageVariant": "jammy",
         "awslocal": true,
         "cdklocal": true,
         "pulumilocal": true,

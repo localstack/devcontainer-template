@@ -3,7 +3,7 @@ cd $(dirname "$0")
 source test-utils.sh
 
 # Scenario specific tests
-check "distro" lsb_release -c | grep "focal"
+check "distro" lsb_release -c | grep "jammy"
 check "awslocal" type awslocal
 check "cdklocal" type cdklocal
 check "pulumilocal" type pulumilocal
