@@ -3,11 +3,12 @@ version: "3.8"
 services:
   localstack:
     container_name: "localstack-main"
-    image: localstack/localstack-pro  # required for Pro
+    image: localstack/localstack-pro:${templateOption:version}  # required for Pro
     ports:
       - "127.0.0.1:4566:4566"            # LocalStack Gateway
       - "127.0.0.1:4510-4559:4510-4559"  # external services port range
       - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (Pro)
+      - "127.0.0.1:53:53"                # LocalStack DNS Server
     env_file:
       - .env
     volumes:
