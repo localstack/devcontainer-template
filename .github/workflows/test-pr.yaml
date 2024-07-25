@@ -51,6 +51,7 @@ jobs:
       - name: Scenario test(s) for '${{ matrix.templates }}'
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         id: scenario_test
         uses: ./.github/actions/scenario-test
         with:
