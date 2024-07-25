@@ -22,7 +22,8 @@
         },
         "usePro": true,
         "awslocal": true,
-        "loadPods": "devcontainer-use_pro_and_pod"
+        "loadPods": "devcontainer-use_pro_and_pod",
+        "version": "3.5.0"
     },
     "persistence_custom_volume_with_3_3_0": {
         "features": {
