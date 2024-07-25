@@ -4,7 +4,7 @@ source test-utils.sh
 
 # Scenario specific tests
 check "localstack-cli version" 'localstack --version | grep 3.5.0'
-check "localstack image version" 'localstack status | grep "Docker image" | grep latest'
+check "localstack image version" 'localstack status | grep "Docker image" | grep 3.5.0'
 check "localstack is pro" "docker inspect localstack-main | jq -e '.[0].Config.Env | index(\"ACTIVATE_PRO=1\") != null'"
 
 localstack wait -t 30
