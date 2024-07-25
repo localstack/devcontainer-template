@@ -102,7 +102,7 @@
         "volumePath": {
             "type": "string",
             "descripiton": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
-            "default": "./volume"
+            "default": "./.volume"
         },
         "enforceIam": {
             "type": "boolean",
