@@ -20,38 +20,39 @@ To use either of the templates use a supported tool and choose one of them, then
 Alternatively, copy the contents of the desired template's `.devcontainer` folder and customize it as necessary.
 
 Both variation of the templates adds automativally the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
-Currently this calls for a **Debian-based** DevContainer image.
+Currently this calls for a **Debian-based** DevContainer images.
 
 ### LocalStack - Docker-in-Docker
 
 This version of the template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
-As a result the newly built DevContainers do not necessarily need to re-download images until this volume exists on the system.
+As a result the newly built DevContainers do not necessarily need to re-download images until this volume exists on the system.  
+Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data (`LOCALSTACK_VOLUME_DIR`).
 
 LocalStack in this variation is controlled via the LocalStack CLI and some env variables that you can adjust or expand in the `devcontainer.json` file's `remoteEnv` block.
-For further configuration options please refer our [official documentation](https://docs.localstack.cloud/references/configuration/).
+For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
 #### Use LocalStack Pro
 
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` environment variable, this will be automatically picked up by the template.
+Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the template.
 
 ### LocalStack - Docker-outside-of-Docker
 
-This version of the template starts up LocalStack as a separate container in the same Docker network as the current DevContainer.
+This version of the template starts up LocalStack as a separate container in the same Docker network using the host system's Docker socket.
 
-To control LocalStack's behaviour adjust the provided `.env` file which will be loaded into LocalStack and the devcontainer after rebuild.
-For further configuration options please refer our [official documentation](https://docs.localstack.cloud/references/configuration/).
+To control LocalStack's behaviour adjust the provided `.env` file which will be loaded both into LocalStack and the created DevContainer after rebuild.
+For further customisation you can edit the provided `Dockerfile` and/or the `devcontainer.json` file.
+Or add additional services by modifying the provided `docker-compose.yml` file.
+For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
-Add additional services by modifying the provided `docker-compose.yml` file.
-
->[!WARNING] In this template version however the LocalStack CLI provides the `start` and `stop` options do not control the LocalStack container with them as that would result in name resolution issues with the container. In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
+>[!WARNING] In this template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container. In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
 
 #### Use LocalStack Pro
 
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` environment variable, this will be automatically picked up by the `.env` file.
+Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the `.env` file.
 
 ## Repo and Template Structure
 
-This repository contains a _collection_ of two Templates - `hello` and `color`. These Templates serve as simple template implementations which helps containerize the project. Similar to the [`devcontainers/templates`](https://github.com/devcontainers/templates) repo, this repository has a `src` folder.  Each Template has its own sub-folder, containing at least a `devcontainer-template.json` and `.devcontainer/devcontainer.json`. 
+This repository contains a _collection_ of two Templates - `localstack-dind` and `localstack-dood`. Similar to the [`devcontainers/templates`](https://github.com/devcontainers/templates) repo, this repository has a `src` folder.  Each Template has its own sub-folder, containing at least a `devcontainer-template.json` and `.devcontainer/devcontainer.json`. 
 
 ```
 ├── src
@@ -74,8 +75,11 @@ This repository contains a _collection_ of two Templates - `hello` and `color`. 
 ├── test
 │   ├── localstack-dind
 |   |   ├── scenarios.json
+|   |   ├── ...
 │   │   └── test.sh
 │   ├── localstack-dood
+|   |   ├── scenarios.json
+|   |   ├── ...
 │   │   └── test.sh
 │   └──test-utils
 │      └── test-utils.sh
@@ -86,21 +90,22 @@ This repository contains a _collection_ of two Templates - `hello` and `color`. 
 
 All available options for a Template should be declared in the `devcontainer-template.json`. The syntax for the `options` property can be found in the [devcontainer Template json properties reference](https://containers.dev/implementors/templates#devcontainer-templatejson-properties).
 
-For example, the `color` Template provides three possible options (`red`, `gold`, `green`), where the default value is set to "red".
+For example, the `localstack-dind` Template provides four possible options (`jammy`, `focal`, `bookworm`, `bullseye`), where the default value is set to "jammy".
 
 ```jsonc
 {
     // ...
     "options": {
-        "favorite": {
+        "imageVariant": {
             "type": "string",
-            "description": "Choose your favorite color."
+            "description": "Debian version (use bullseye or jammy on local arm64/Apple Silicon):",
             "proposals": [
-                "red",
-                "gold",
-                "green"
+                "jammy",
+                "focal",
+                "bullseye",
+                "bookworm"
             ],
-            "default": "red"
+            "default": "jammy"
         }
     }
 }
@@ -196,6 +201,8 @@ Additionally the repo had been extended for scenario testing. To define scenario
 }
 ```
 By defining a scenario, you additionally need to define a similarly named shell script in the folder, ie. if the scenario key was `test_with_my_input` needs a `test_with_my_input.sh` file.
+
+In case of scenarios you can add any other valid DevContainer config options like `features` or `customizations`, that you'd use normally, these options will be merged into the resulting `devcontainers.json` file.
 
 For running the tests locally, you would need to execute the following commands -
 
