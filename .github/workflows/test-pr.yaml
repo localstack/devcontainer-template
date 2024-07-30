@@ -33,6 +33,7 @@ jobs:
       - name: Smoke test for '${{ matrix.templates }}'
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         id: smoke_test
         uses: ./.github/actions/smoke-test
         with:
