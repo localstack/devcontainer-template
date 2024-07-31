@@ -19,13 +19,13 @@ A Template can be used in a new or existing project, and a [supporting tool](htt
 To use either of the templates use a supported tool and choose one of them, then either add custom values to the options or keep the defaults.
 Alternatively, copy the contents of the desired template's `.devcontainer` folder and customize it as necessary.
 
-Both variation of the templates adds automativally the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
-Currently this calls for a **Debian-based** DevContainer images.
+Both variation of the templates adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
+Currently this calls for a **Debian-based** DevContainer image.
 
 ### LocalStack - Docker-in-Docker
 
 This version of the template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
-As a result the newly built DevContainers do not necessarily need to re-download images until this volume exists on the system.  
+As a result the newly built DevContainers do not necessarily need to re-download images as long this volume exists on the system.  
 Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data (`LOCALSTACK_VOLUME_DIR`).
 
 LocalStack in this variation is controlled via the LocalStack CLI and some env variables that you can adjust or expand in the `devcontainer.json` file's `remoteEnv` block.
@@ -44,7 +44,10 @@ For further customisation you can edit the provided `Dockerfile` and/or the `dev
 Or add additional services by modifying the provided `docker-compose.yml` file.
 For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
->[!WARNING] In this template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container. In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
+>[!WARNING]
+> In this template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container.
+>
+> In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
 
 #### Use LocalStack Pro
 
@@ -123,13 +126,14 @@ Templates are individually versioned by the `version` attribute in a Template's 
 
 ### Publishing
 
+>[!NOTE]
 > NOTE: The Distribution spec can be [found here](https://containers.dev/implementors/templates-distribution/).  
 >
 > While any registry [implementing the OCI Distribution spec](https://github.com/opencontainers/distribution-spec) can be used, this template will leverage GHCR (GitHub Container Registry) as the backing registry.
 
 Templates are source files packaged together that encode configuration for a complete development environment.
 
-This repo contains a GitHub Action [workflow](.github/workflows/release.yaml) that will publish each template to GHCR.  By default, each Template will be prefixed with the `<owner/<repo>` namespace.  For example, the two Templates in this repository can be referenced by an [implementing tool](https://containers.dev/supporting#tools) with:
+This repo contains a GitHub Action [workflow](.github/workflows/release.yaml) that will publish each template to GHCR.  By default, each Template will be prefixed with the `<owner>/<repo>` namespace.  For example, the two Templates in this repository can be referenced by an [implementing tool](https://containers.dev/supporting#tools) with:
 
 ```
 ghcr.io/devcontainers/template-starter/color:latest

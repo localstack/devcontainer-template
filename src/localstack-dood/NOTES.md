@@ -5,10 +5,13 @@ For further customisation you can edit the provided `Dockerfile` and/or the `dev
 Or add additional services by modifying the provided `docker-compose.yml` file.
 For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
-The template adds automativally the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
+The template adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
 Currently this calls for a **Debian-based** DevContainer image.
 
->[!WARNING] In this template version however the LocalStack CLI provides the `start` and `stop` options do not control the LocalStack container with them as that would result in name resolution issues with the container. In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
+>[!WARNING]
+> In this template version however the LocalStack CLI provides the `start` and `stop` options do not control the LocalStack container with them as that would result in name resolution issues with the container.
+>
+> In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
 
 #### Use LocalStack Pro
 
