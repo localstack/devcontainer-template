@@ -5,6 +5,24 @@ set -e
 
 shopt -s dotglob
 
+function remove_comments {
+    sed -i -re 's/[[:blank:]]*(\/\/\s.*)//' ${1}
+}
+
+function merge {
+    cp .devcontainer/devcontainer.json .devcontainer/devcontainer.json.bak
+    remove_comments .devcontainer/devcontainer.json.bak
+
+    jq -s ".[0] * .[1]" .devcontainer/devcontainer.json.bak ./inputs.json > .devcontainer/devcontainer.json
+    cp -f .devcontainer/devcontainer.json .devcontainer/devcontainer.json.bak
+    
+    # Clean up unneeded keys
+    printf -v tmp_str '.%s,' "${OPTIONS[@]}"
+    jq "del($(echo "${tmp_str%,}"))" .devcontainer/devcontainer.json.bak > .devcontainer/devcontainer.json
+
+    rm .devcontainer/devcontainer.json.bak
+}
+
 SRC_DIR="/tmp/${TEMPLATE_ID}"
 cp -R "src/${TEMPLATE_ID}" "${SRC_DIR}"
 
@@ -46,6 +64,10 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
             unset OPTION_VALUE
         done
     fi
+fi
+
+if [ -f inputs.json ] ; then
+    merge
 fi
 
 popd
