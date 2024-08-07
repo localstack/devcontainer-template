@@ -10,21 +10,21 @@ A Template can be used in a new or existing project, and a [supporting tool](htt
 >[!WARNING]
 > This repo currently a work in progress which might introduce breaking changes without notification.
 
-## List of templates
+## List of Templates
 - LocalStack Docker-in-Docker: setup a devcontainer with LocalStack running in an internal Docker service
 - LocalStack Docker-outside-of-Docker: setup a devcontainer communicating with a separate LocalStack instance running on the same Docker network
 
 ## Usage
 
-To use either of the templates use a supported tool and choose one of them, then either add custom values to the options or keep the defaults.
-Alternatively, copy the contents of the desired template's `.devcontainer` folder and customize it as necessary.
+To use either of the Templates use a supported tool and choose one of them, then either add custom values to the options or keep the defaults.
+Alternatively, copy the contents of the desired Template's `.devcontainer` folder and customize it as necessary.
 
-Both variation of the templates adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular Local™ Tools.
+Both variation of the Templates adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular *Local Tools™*.
 Currently this calls for a **Debian-based** DevContainer image.
 
 ### LocalStack - Docker-in-Docker
 
-This version of the template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
+This version of the Template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
 As a result the newly built DevContainers do not necessarily need to re-download images as long this volume exists on the system.  
 Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data (`LOCALSTACK_VOLUME_DIR`).
 
@@ -33,11 +33,11 @@ For further LocalStack configuration options please consult our [official docume
 
 #### Use LocalStack Pro
 
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the template.
+Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the Template.
 
 ### LocalStack - Docker-outside-of-Docker
 
-This version of the template starts up LocalStack as a separate container in the same Docker network using the host system's Docker socket.
+This version of the Template starts up LocalStack as a separate container in the same Docker network using the host system's Docker socket.
 
 To control LocalStack's behaviour adjust the provided `.env` file which will be loaded both into LocalStack and the created DevContainer after rebuild.
 For further customisation you can edit the provided `Dockerfile` and/or the `devcontainer.json` file.
@@ -45,7 +45,7 @@ Or add additional services by modifying the provided `docker-compose.yml` file.
 For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
 >[!WARNING]
-> In this template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container.
+> In this Template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container.
 >
 > In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
 
@@ -93,7 +93,7 @@ This repository contains a _collection_ of two Templates - `localstack-dind` and
 
 All available options for a Template should be declared in the `devcontainer-template.json`. The syntax for the `options` property can be found in the [devcontainer Template json properties reference](https://containers.dev/implementors/templates#devcontainer-templatejson-properties).
 
-For example, the `localstack-dind` Template provides four possible options (`jammy`, `focal`, `bookworm`, `bullseye`), where the default value is set to "jammy".
+For example, the `localstack-dind` Template provides four possible options (`jammy`, `focal`, `bookworm`, `bullseye`), where the default value is set to `jammy`.
 
 ```jsonc
 {
@@ -175,7 +175,7 @@ For running the tests locally, you would need to execute the following commands 
     ./.github/actions/smoke-test/test.sh ${TEMPLATE-ID} 
 ```
 
-To override the default values for example for manual testing an `inputs.json` file can be defined in the template folder. The file's structure is the following:
+To override the default values for example for manual testing an `inputs.json` file can be defined in the Template's folder. The file's structure is the following:
 ```json
 {
     "input1": "value1",
@@ -185,7 +185,7 @@ To override the default values for example for manual testing an `inputs.json` f
 ```
 
 #### Scenario Tests
-Additionally the repo had been extended for scenario testing. To define scenario tests, you would need to define a `scenarios.json` file in the respective template's `test` folder. The file's structure is the following:
+Additionally the repo had been extended for scenario testing. To define scenario tests, you would need to define a `scenarios.json` file in the respective Template's `test` folder. The file's structure is the following:
 
 ```json
 {
