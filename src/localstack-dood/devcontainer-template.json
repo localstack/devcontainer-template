@@ -56,6 +56,21 @@
             ],
             "default": "info"
         },
+        "networkName": {
+            "type": "string",
+            "descripiton": "LocalStack network name:",
+            "default": "ls"
+        },
+        "networkCidr": {
+            "type": "string",
+            "descripiton": "LocalStack network CIDR:",
+            "default": "10.0.2.0/24"
+        },
+        "ipAddress": {
+            "type": "string",
+            "descripiton": "LocalStack IP:",
+            "default": "10.0.2.20"
+        },
         "host": {
             "type": "string",
             "descripiton": "LocalStack hostname:",
