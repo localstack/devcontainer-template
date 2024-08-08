@@ -25,11 +25,11 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
 			"version": "${templateOption:version}",
-			"awslocal": ${templateOption:awslocal},
-			"cdklocal": ${templateOption:cdklocal},
-			"pulumilocal": ${templateOption:pulumilocal},
-			"samlocal": ${templateOption:samlocal},
-			"tflocal": ${templateOption:tflocal}
+			"awslocal": ${templateOption:awslocal},  // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
+			"cdklocal": ${templateOption:cdklocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
+			"pulumilocal": ${templateOption:pulumilocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
+			"samlocal": ${templateOption:samlocal},  // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
+			"tflocal": ${templateOption:tflocal}  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
 		}
 	},
 
