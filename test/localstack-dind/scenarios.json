@@ -1,0 +1,47 @@
+{
+    "tools_no_startup": {
+        "features": {
+            "ghcr.io/devcontainers/features/node:1": {}
+        },
+        "imageVariant": "jammy",
+        "awslocal": true,
+        "cdklocal": true,
+        "pulumilocal": true,
+        "samlocal": true,
+        "tflocal": true,
+        "startup": false
+    },
+    "debug_mode_on_bookworm": {
+        "imageVariant": "bookworm",
+        "debug": true,
+        "logLevel": "trace"
+    },
+    "use_pro_and_pod": {
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "usePro": true,
+        "awslocal": true,
+        "loadPods": "devcontainer-use_pro_and_pod",
+        "version": "3.5.0"
+    },
+    "persistence_custom_volume_with_3_3_0": {
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "usePro": true,
+        "awslocal": true,
+        "version": "3.3.0",
+        "persistence": true,
+        "volumePath": "./volume"
+    },
+    "custom_region_with_iam_enforce": {
+        "awslocal": true,
+        "features": {
+            "ghcr.io/devcontainers/features/aws-cli:1": {}
+        },
+        "defaultRegion": "eu-central-1",
+        "enforceIam": true,
+        "usePro": true
+    }
+}

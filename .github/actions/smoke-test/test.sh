@@ -10,4 +10,4 @@ devcontainer exec --workspace-folder "${SRC_DIR}" --id-label ${ID_LABEL} /bin/sh
 
 # Clean up
 docker rm -f $(docker container ls -f "label=${ID_LABEL}" -q)
-rm -rf "${SRC_DIR}"
+sudo rm -rf "${SRC_DIR}"

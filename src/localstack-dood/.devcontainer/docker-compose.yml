@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: "localstack-main"
+    image: localstack/localstack-pro:${templateOption:version}  # required for Pro
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+      - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (Pro)
+    env_file:
+      - .env
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${templateOption:volumePath}:/var/lib/localstack"
+    networks:
+      ${templateOption:networkName}:
+        # Set the container IP address in the ${templateOption:networkCidr} subnet
+        ipv4_address: ${templateOption:ipAddress}
+  
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../..:/workspaces:cached
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    init: true
+    env_file:
+      - .env
+    dns:
+      # Set the DNS server to be the LocalStack container
+      - ${templateOption:ipAddress}
+    networks:
+      - ls
+
+networks:
+  ${templateOption:networkName}:
+    ipam:
+      config:
+        # Specify the subnet range for IP address allocation
+        - subnet: ${templateOption:networkCidr}

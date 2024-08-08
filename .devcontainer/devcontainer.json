@@ -1,6 +1,6 @@
 // More info: https://containers.dev/implementors/json_reference/
 {
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bullseye",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
@@ -11,6 +11,11 @@
 				"dbaeumer.vscode-eslint"
 			]
 		}
+	},
+	"remoteEnv": {
+		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required for Pro, not processed via template due to security reasons
+		"LOCALSTACK_API_KEY": "${localEnv:LOCALSTACK_API_KEY}"
 	},
 	"postCreateCommand": "npm install -g @devcontainers/cli"
 }
