@@ -33,7 +33,7 @@ services:
       # Set the DNS server to be the LocalStack container
       - ${templateOption:ipAddress}
     networks:
-      - ls
+      - ${templateOption:networkName}
 
 networks:
   ${templateOption:networkName}:
