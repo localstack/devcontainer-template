@@ -3,7 +3,7 @@
     "version": "0.1.1",
     "name": "LocalStack Docker-outside-of-Docker",
     "description": "A template to manage LocalStack in DooD",
-    "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack",
+    "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack-dood",
     "licenseURL": "https://github.com/localstack/devcontainer-template/blob/main/LICENSE",
     "options": {
         "imageVariant": {
