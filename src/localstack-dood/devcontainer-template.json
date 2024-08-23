@@ -1,6 +1,6 @@
 {
     "id": "localstack-dood",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "name": "LocalStack Docker-outside-of-Docker",
     "description": "A template to manage LocalStack in DooD",
     "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack-dood",
