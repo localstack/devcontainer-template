@@ -3,6 +3,10 @@ inputs:
   template:
     description: 'Template to test'
     required: true
+  feature-ref:
+    description: 'Optional git ref of localstack/devcontainer-feature to test against instead of the published Feature'
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -11,7 +15,17 @@ runs:
       id: checkout_release
       uses: actions/checkout@v4
 
+    - name: Checkout unreleased Feature
+      if: ${{ inputs.feature-ref != '' }}
+      uses: actions/checkout@v4
+      with:
+        repository: localstack/devcontainer-feature
+        ref: ${{ inputs.feature-ref }}
+        path: .feature
+
     - name: Test scenario templates
       id: test_template
       shell: bash
+      env:
+        LOCAL_FEATURE_DIR: ${{ inputs.feature-ref != '' && '.feature/src/localstack-cli' || '' }}
       run: ${{ github.action_path }}/controller.sh ${{ inputs.template }}

@@ -15,6 +15,11 @@ on:
       - .gitkeep
       - .gitignore
   workflow_dispatch:
+    inputs:
+      feature-ref:
+        description: 'Test against this git ref of localstack/devcontainer-feature instead of the published Feature'
+        required: false
+        default: ''
 
 jobs:
   detect-changes:
@@ -58,6 +63,7 @@ jobs:
         uses: ./.github/actions/smoke-test
         with:
           template: "${{ matrix.templates }}"
+          feature-ref: ${{ inputs.feature-ref }}
 
   scenario-test:
     needs: [detect-changes]
@@ -76,3 +82,4 @@ jobs:
         uses: ./.github/actions/scenario-test
         with:
           template: "${{ matrix.templates }}"
+          feature-ref: ${{ inputs.feature-ref }}
