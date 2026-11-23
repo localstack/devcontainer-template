@@ -6,6 +6,13 @@ ID_LABEL="$2"
 COMPOSE_PROJECT="$(basename "${SRC_DIR}")_devcontainer"
 
 echo "🧹 Cleaning up ${SRC_DIR}"
+# DooD: LocalStack runs as a compose service next to the dev container. Print its logs before removing it,
+# so startup failures (e.g. a rejected auth token) are visible in CI.
+if docker container inspect localstack-main &> /dev/null ; then
+    echo "::group::LocalStack container logs (localstack-main)"
+    docker logs --tail 200 localstack-main 2>&1
+    echo "::endgroup::"
+fi
 # Stop the compose services first, so LocalStack removes the Lambda containers it started.
 PROJECT_CONTAINERS=$(docker container ls -q -f "label=com.docker.compose.project=${COMPOSE_PROJECT}")
 if [ -n "${PROJECT_CONTAINERS}" ] ; then
