@@ -3,50 +3,38 @@
 	"image": "mcr.microsoft.com/devcontainers/base:${templateOption:imageVariant}",
 
 	"remoteEnv": {
-		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
-		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required for Pro, not processed via template due to security reasons
-		"LOCALSTACK_API_KEY": "${localEnv:LOCALSTACK_API_KEY}",
-		// LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-		"ACTIVATE_PRO": ${templateOption:usePro},
-		"DEBUG": ${templateOption:debug},
-		"LS_LOG": "${templateOption:logLevel}",
-		"PERSISTENCE": ${templateOption:persistence},
-		"AWS_ENDPOINT_URL": "http://localhost.localstack.cloud:4566",
-		"AUTO_LOAD_POD": "${templateOption:loadPods}",
-		"ENFORCE_IAM": ${templateOption:enforceIam},
+		// LocalStack auth token: https://docs.localstack.cloud/aws/getting-started/auth-token/
+		// Read from the host and never written into the template. You can also run `lstk login` in the container.
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",
 		"AWS_REGION": "${templateOption:defaultRegion}",
 		"AWS_DEFAULT_REGION": "${templateOption:defaultRegion}",
-		"IMAGE_NAME": "localstack/localstack-pro:${templateOption:version}",
-		"LOCALSTACK_VOLUME_DIR": "/data"
+		// `aws` and the AWS SDKs use the `localstack` profile written by `lstk setup aws`.
+		// Do not set AWS_ENDPOINT_URL here: `lstk start` refuses to run when it is set.
+		"AWS_PROFILE": "localstack"
 	},
 
 	// 👇 Features to add to the Dev Container. More info: https://containers.dev/implementors/features.
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
-			"version": "${templateOption:version}",
-			"awslocal": ${templateOption:awslocal},  // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
-			"cdklocal": ${templateOption:cdklocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
-			"pulumilocal": ${templateOption:pulumilocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
-			"samlocal": ${templateOption:samlocal},  // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
-			"tflocal": ${templateOption:tflocal}  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
-		}
+		"ghcr.io/devcontainers/features/docker-in-docker:4": {},
+		// `lstk aws` and the `localstack` profile need the AWS CLI.
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
+		// Installs lstk. For `lstk terraform`, `lstk cdk` or `lstk sam`, also add
+		// ghcr.io/devcontainers/features/terraform:1, ghcr.io/devcontainers-extra/features/aws-cdk:2
+		// or ghcr.io/customink/codespaces-features/sam-cli:1.
+		"ghcr.io/localstack/devcontainer-feature/localstack-cli:1": {}
 	},
 
-	// 👇 Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "type localstack; ${templateOption:startup} && localstack start -d || true",
+	// lstk reads .devcontainer/lstk/config.toml through ~/.config/lstk/config.toml.
+	"postCreateCommand": "bash .devcontainer/lstk/post-create.sh",
+	// Starts LocalStack on every container start, as the inner Docker daemon restarts with the container.
+	"postStartCommand": "bash .devcontainer/lstk/post-start.sh ${templateOption:startup}",
+
 	"mounts": [
 		{
-			// to persist build data and images
-			"source": "dind-var-lib-docker",
-			"target": "/var/lib/docker",
-			"type": "volume"
-		}, 
-		{ 
-			"source": "${templateOption:volumePath}",
+			// LocalStack state (/var/lib/localstack), kept across container rebuilds.
+			"source": "localstack-data-${devcontainerId}",
 			"target": "/data",
-			"type": "bind",
-			"consistency": "cached"
+			"type": "volume"
 		}
 	]
 }

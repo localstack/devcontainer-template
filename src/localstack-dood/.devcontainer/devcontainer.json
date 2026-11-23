@@ -7,13 +7,16 @@
 	// 👇 Features to add to the Dev Container. More info: https://containers.dev/implementors/features.
 	"features": {
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
-			"version": "${templateOption:version}",
-			"awslocal": ${templateOption:awslocal},  // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
-			"cdklocal": ${templateOption:cdklocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
-			"pulumilocal": ${templateOption:pulumilocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
-			"samlocal": ${templateOption:samlocal},  // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
-			"tflocal": ${templateOption:tflocal}  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
-		}
-	}
+		// `lstk aws` and the `localstack` profile need the AWS CLI.
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
+		// Installs lstk. For `lstk terraform`, `lstk cdk` or `lstk sam`, also add
+		// ghcr.io/devcontainers/features/terraform:1, ghcr.io/devcontainers-extra/features/aws-cdk:2
+		// or ghcr.io/customink/codespaces-features/sam-cli:1.
+		"ghcr.io/localstack/devcontainer-feature/localstack-cli:1": {}
+	},
+
+	// Writes the `localstack` AWS profile.
+	"postCreateCommand": "lstk --non-interactive setup aws --force",
+	// Waits for the localstack service and prints its status.
+	"postStartCommand": "bash .devcontainer/lstk/post-start.sh"
 }

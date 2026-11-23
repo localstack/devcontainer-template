@@ -1,47 +1,22 @@
 {
-    "tools": {
-        "features": {
-            "ghcr.io/devcontainers/features/node:1": {}
-        },
-        "imageVariant": "jammy",
-        "awslocal": true,
-        "cdklocal": true,
-        "pulumilocal": true,
-        "samlocal": true,
-        "tflocal": true,
-        "startup": false
+    "custom_host_iam_and_region": {
+        "host": "my-host.localstack.cloud:4566",
+        "defaultRegion": "eu-central-1",
+        "enforceIam": true
     },
-    "debug_mode_on_bookworm": {
+    "persistence_pinned_version_on_jammy": {
+        "imageVariant": "jammy",
+        "version": "2026.10",
+        "persistence": true,
+        "volumePath": "./volume"
+    },
+    "terraform_pod_and_debug_on_bookworm": {
         "imageVariant": "bookworm",
+        "features": {
+            "ghcr.io/devcontainers/features/terraform:1": {}
+        },
+        "loadPods": "devcontainer-template-ci-dood",
         "debug": true,
         "logLevel": "trace"
-    },
-    "use_pro_and_pod": {
-        "features": {
-            "ghcr.io/devcontainers/features/aws-cli:1": {}
-        },
-        "usePro": true,
-        "awslocal": true,
-        "loadPods": "devcontainer-use_pro_and_pod",
-        "version": "3.5.0"
-    },
-    "custom_volume_and_host_with_3_3_0": {
-        "features": {
-            "ghcr.io/devcontainers/features/aws-cli:1": {}
-        },
-        "usePro": true,
-        "awslocal": true,
-        "version": "3.3.0",
-        "volumePath": "./volume",
-        "host": "my-host.localstack.cloud:4566"
-    },
-    "custom_region_with_iam_enforce": {
-        "awslocal": true,
-        "features": {
-            "ghcr.io/devcontainers/features/aws-cli:1": {}
-        },
-        "defaultRegion": "eu-central-1",
-        "enforceIam": true,
-        "usePro": true
     }
 }

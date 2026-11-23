@@ -1,6 +1,6 @@
 // More info: https://containers.dev/implementors/json_reference/
 {
-	"image": "mcr.microsoft.com/devcontainers/javascript-node:1-18-bookworm",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
@@ -13,9 +13,8 @@
 		}
 	},
 	"remoteEnv": {
-		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
-		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required for Pro, not processed via template due to security reasons
-		"LOCALSTACK_API_KEY": "${localEnv:LOCALSTACK_API_KEY}"
+		// Needed by the template tests: https://docs.localstack.cloud/aws/getting-started/auth-token/
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}"
 	},
 	"postCreateCommand": "npm install -g @devcontainers/cli"
 }

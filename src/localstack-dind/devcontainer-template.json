@@ -1,50 +1,35 @@
 {
     "id": "localstack-dind",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "name": "LocalStack Docker-in-Docker",
-    "description": "A template to manage LocalStack in DinD via CLI",
+    "description": "Runs LocalStack inside the dev container's own Docker daemon and manages it with lstk.",
     "documentationURL": "https://github.com/localstack/devcontainer-template/tree/main/src/localstack-dind",
     "licenseURL": "https://github.com/localstack/devcontainer-template/blob/main/LICENSE",
     "options": {
         "imageVariant": {
             "type": "string",
-            "description": "Debian version (use bullseye or jammy on local arm64/Apple Silicon):",
+            "description": "Ubuntu or Debian version of the base image:",
             "proposals": [
+                "noble",
                 "jammy",
-                "focal",
-                "bullseye",
+                "resolute",
                 "bookworm"
             ],
-            "default": "jammy"
+            "default": "noble"
         },
-        "awslocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for AWS CLI:",
-            "default": "false"
-        },
-        "cdklocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for CDK:",
-            "default": "false"
-        },
-        "pulumilocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for Pulumi:",
-            "default": "false"
-        },
-        "samlocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for AWS SAM CLI:",
-            "default": "false"
-        },
-        "tflocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for Terraform:",
-            "default": "false"
+        "version": {
+            "type": "string",
+            "description": "LocalStack image tag (localstack/localstack-pro):",
+            "proposals": [
+                "latest",
+                "stable",
+                "2026.10"
+            ],
+            "default": "latest"
         },
         "logLevel": {
             "type": "string",
-            "description": "Set LocalStack log level:",
+            "description": "LocalStack log level (LS_LOG):",
             "enum": [
                 "trace",
                 "trace-internal",
@@ -58,53 +43,27 @@
         },
         "debug": {
             "type": "boolean",
-            "descripiton": "Enable LocalStack debugging:",
-            "default": "false"
+            "description": "Enable LocalStack debug mode (DEBUG):",
+            "default": false
         },
         "persistence": {
             "type": "boolean",
-            "descripiton": "Enable persistence in LocalStack:",
-            "default": "false"
-        },
-        "usePro": {
-            "type": "boolean",
-            "descripiton": "Enable LocalStack Pro:",
-            "default": "false"
-        },
-        "version": {
-            "type": "string",
-            "descripiton": "Use LocalStack version:",
-            "proposals": [
-                "latest",
-                "3.6.0",
-                "3.5.0",
-                "3.4.0",
-                "3.3.0",
-                "3.2.0",
-                "3.1.0",
-                "3.0.2",
-                "3.0.1"
-            ],
-            "default": "latest"
-        },
-        "loadPods": {
-            "type": "string",
-            "descripiton": "Load Cloud Pods at start-up (comma-separated list):",
-            "default": " "
-        },
-        "volumePath": {
-            "type": "string",
-            "descripiton": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
-            "default": "./.volume"
+            "description": "Persist LocalStack state across restarts (PERSISTENCE):",
+            "default": false
         },
         "enforceIam": {
             "type": "boolean",
-            "descripiton": "Enforce IAM:",
-            "default": "false"
+            "description": "Enforce IAM policies (ENFORCE_IAM):",
+            "default": false
+        },
+        "loadPods": {
+            "type": "string",
+            "description": "Cloud Pods to load at start-up, comma-separated (AUTO_LOAD_POD):",
+            "default": ""
         },
         "defaultRegion": {
             "type": "string",
-            "descripiton": "Default AWS region:",
+            "description": "Default AWS region for the AWS CLI and SDKs:",
             "proposals": [
                 "us-east-1",
                 "us-east-2",
@@ -140,11 +99,17 @@
         },
         "startup": {
             "type": "boolean",
-            "description": "Start up LocalStack:",
-            "default": "true"
+            "description": "Start LocalStack with lstk when the container starts:",
+            "default": true
         }
     },
     "platforms": [
         "Any"
+    ],
+    "keywords": [
+        "localstack",
+        "lstk",
+        "aws",
+        "docker-in-docker"
     ]
 }

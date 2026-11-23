@@ -11,47 +11,33 @@ A Template can be used in a new or existing project, and a [supporting tool](htt
 > This repo currently a work in progress which might introduce breaking changes without notification.
 
 ## List of Templates
-- LocalStack Docker-in-Docker: setup a devcontainer with LocalStack running in an internal Docker service
-- LocalStack Docker-outside-of-Docker: setup a devcontainer communicating with a separate LocalStack instance running on the same Docker network
+- LocalStack Docker-in-Docker (`localstack-dind`): runs LocalStack inside the dev container's own Docker daemon and manages it with `lstk`.
+- LocalStack Docker-outside-of-Docker (`localstack-dood`): runs LocalStack as a Docker Compose service next to the dev container, on the host's Docker daemon.
 
 ## Usage
 
-To use either of the Templates use a supported tool and choose one of them, then either add custom values to the options or keep the defaults.
-Alternatively, copy the contents of the desired Template's `.devcontainer` folder and customize it as necessary.
+Pick one of the Templates in a [supporting tool](https://containers.dev/supporting), such as VS Code or the Dev Container CLI, and keep the defaults or adjust the options.
+You can also copy the Template's `.devcontainer` folder into your project and edit it.
 
-Both variation of the Templates adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular *Local Tools™*.
-Currently this calls for a **Debian-based** DevContainer image.
+Both Templates add the [LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs [`lstk`](https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/), the LocalStack CLI, and the AWS CLI Feature.
+`lstk` replaces the legacy `localstack` CLI and the `awslocal`, `tflocal`, `cdklocal` and `samlocal` wrappers.
+The Templates use Ubuntu or Debian based images.
+
+Both Templates need a LocalStack [auth token](https://docs.localstack.cloud/aws/getting-started/auth-token/).
+Set `LOCALSTACK_AUTH_TOKEN` on the host before you build the container. It is read from the host environment and never written into the Template files.
 
 ### LocalStack - Docker-in-Docker
 
-This version of the Template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
-As a result the newly built DevContainers do not necessarily need to re-download images as long this volume exists on the system.  
-Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data (`LOCALSTACK_VOLUME_DIR`).
-
-LocalStack in this variation is controlled via the LocalStack CLI and some env variables that you can adjust or expand in the `devcontainer.json` file's `remoteEnv` block.
-For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
-
-#### Use LocalStack Pro
-
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the Template.
+LocalStack runs in the dev container's own Docker daemon. `lstk start` runs on every container start.
+The `lstk` configuration lives in `.devcontainer/lstk/config.toml`. LocalStack state is kept in a Docker volume and survives rebuilds.
+See the [Template README](src/localstack-dind/README.md).
 
 ### LocalStack - Docker-outside-of-Docker
 
-This version of the Template starts up LocalStack as a separate container in the same Docker network using the host system's Docker socket.
-
-To control LocalStack's behaviour adjust the provided `.env` file which will be loaded both into LocalStack and the created DevContainer after rebuild.
-For further customisation you can edit the provided `Dockerfile` and/or the `devcontainer.json` file.
-Or add additional services by modifying the provided `docker-compose.yml` file.
-For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
-
->[!WARNING]
-> In this Template version however the LocalStack CLI provides the `start` and `stop` options do **NOT** control the LocalStack container with them as that would result in name resolution issues in the container.
->
-> In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
-
-#### Use LocalStack Pro
-
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the `.env` file.
+LocalStack runs as the `localstack` service in `.devcontainer/docker-compose.yml`, on the host's Docker daemon.
+`lstk` talks to it through `LSTK_ENDPOINT_URL`. Docker Compose, not `lstk`, starts and stops the LocalStack container.
+LocalStack's DNS server resolves `localhost.localstack.cloud` inside the dev container, and Lambda containers join the same network.
+See the [Template README](src/localstack-dood/README.md).
 
 ## Repo and Template Structure
 
@@ -61,20 +47,23 @@ This repository contains a _collection_ of two Templates - `localstack-dind` and
 ├── src
 │   ├── localstack-dind
 │   │   ├── devcontainer-template.json
-│   │   ├── inputs.json
+│   │   ├── NOTES.md
 │   │   └──| .devcontainer
-│   │      └── devcontainer.json
+│   │      ├── devcontainer.json
+│   │      └──| lstk
+│   │         ├── config.toml
+│   │         ├── post-create.sh
+│   │         └── post-start.sh
 │   ├── localstack-dood
 │   │   ├── devcontainer-template.json
+│   │   ├── NOTES.md
 │   │   └──| .devcontainer
 │   │      ├── .env
 │   │      ├── devcontainer.json
-│   │      ├── docker-compose.yaml
-│   │      └── Dockerfile
-|   ├── ...
-│   │   ├── devcontainer-template.json
-│   │   └──| .devcontainer
-│   │      └── devcontainer.json
+│   │      ├── docker-compose.yml
+│   │      ├── Dockerfile
+│   │      └──| lstk
+│   │         └── post-start.sh
 ├── test
 │   ├── localstack-dind
 |   |   ├── scenarios.json
@@ -93,7 +82,7 @@ This repository contains a _collection_ of two Templates - `localstack-dind` and
 
 All available options for a Template should be declared in the `devcontainer-template.json`. The syntax for the `options` property can be found in the [devcontainer Template json properties reference](https://containers.dev/implementors/templates#devcontainer-templatejson-properties).
 
-For example, the `localstack-dind` Template provides four possible options (`jammy`, `focal`, `bookworm`, `bullseye`), where the default value is set to `jammy`.
+For example, the `localstack-dind` Template offers four image variants, with `noble` as the default.
 
 ```jsonc
 {
@@ -101,14 +90,9 @@ For example, the `localstack-dind` Template provides four possible options (`jam
     "options": {
         "imageVariant": {
             "type": "string",
-            "description": "Debian version (use bullseye or jammy on local arm64/Apple Silicon):",
-            "proposals": [
-                "jammy",
-                "focal",
-                "bullseye",
-                "bookworm"
-            ],
-            "default": "jammy"
+            "description": "Ubuntu or Debian version of the base image:",
+            "proposals": ["noble", "jammy", "resolute", "bookworm"],
+            "default": "noble"
         }
     }
 }
@@ -171,9 +155,12 @@ This repo contains a GitHub Action [workflow](.github/workflows/test-pr.yaml) fo
 For running the tests locally, you would need to execute the following commands -
 
 ```
+    export LOCALSTACK_AUTH_TOKEN=<your token>
     ./.github/actions/smoke-test/build.sh ${TEMPLATE-ID} 
     ./.github/actions/smoke-test/test.sh ${TEMPLATE-ID} 
 ```
+
+The scripts use GNU `sed`. To test against a local checkout of the [Feature](https://github.com/localstack/devcontainer-feature) instead of the published one, set `LOCAL_FEATURE_DIR`, for example `LOCAL_FEATURE_DIR=../devcontainer-feature/src/localstack-cli`.
 
 To override the default values for example for manual testing an `inputs.json` file can be defined in the Template's folder. The file's structure is the following:
 ```json

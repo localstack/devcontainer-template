@@ -16,16 +16,7 @@ function reportAllScenarioResults {
 }
 
 function cleanup {
-    # Clean up
-    echo "🧹 Cleaning up..."
-    local ID_LABEL=${2}
-    CONTAINER_ID=$(docker container ls -f "label=${ID_LABEL}" -q)
-    if [ "${CONTAINER_ID:-x}" != "x" ]; then
-        docker rm -f "${CONTAINER_ID}" > /dev/null && echo "🧹 Removing container ${CONTAINER_ID}"
-        echo "🧹 Removing container localstack-main (if exists)" && docker rm -f "localstack-main" &> /dev/null
-    fi
-    echo "🧹 Removing container network ${ID_LABEL/*=/}_devcontainer_ls (if exists)" && docker network rm -f "${ID_LABEL/*=/}_devcontainer_ls" > /dev/null
-    sudo rm -rf "${1}" && echo "🧹 Removing scenario files ${SCENARIO}"
+    "$(dirname "$0")/../cleanup.sh" "${1}" "${2}"
 }
 
 function no_scenarios {

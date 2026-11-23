@@ -2,6 +2,7 @@
 TEMPLATE_ID="$1"
 SCENARIO="$2"
 SRC_DIR="/tmp/${TEMPLATE_ID}-${SCENARIO}"
+LOCAL_FEATURE_DIR="${LOCAL_FEATURE_DIR:+$(cd "${LOCAL_FEATURE_DIR}" && pwd)}"
 
 set -e
 
@@ -48,28 +49,33 @@ function gen_config {
             fi
             
             if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
+                if [ "$(jq -r --arg o "${OPTION}" '.options[$o] | has("default")' devcontainer-template.json)" != "true" ] ; then
+                    echo "Template '${TEMPLATE_ID}-${SCENARIO}' is missing a default value for option '${OPTION}'"
+                    exit 1
+                fi
                 OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
-            fi
-
-            # For empty default values use " "
-            if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
-                echo "Template '${TEMPLATE_ID}-${SCENARIO}' is missing a default value for option '${OPTION}'"
-                exit 1
             fi
 
             echo "(!) Replacing '${OPTION_KEY}' with '${OPTION_VALUE}'"
             OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
             find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
-            
-            if [ "${OPTION}" == "volumePath" ] ; then
-                mkdir -p ${SRC_DIR}/${OPTION_VALUE}
-            fi
 
             unset OPTION_VALUE
         done
         
         merge
     fi
+}
+
+# Optional: test against a local checkout of the LocalStack Feature instead of
+# the published one, e.g. LOCAL_FEATURE_DIR=../devcontainer-feature/src/localstack-cli
+function use_local_feature {
+    if [ -z "${LOCAL_FEATURE_DIR:-}" ] ; then
+        return
+    fi
+    echo "(!) Using local LocalStack Feature from '${LOCAL_FEATURE_DIR}'"
+    cp -R "${LOCAL_FEATURE_DIR}" "${SRC_DIR}/.devcontainer/localstack-cli"
+    sed -i -e 's#"ghcr.io/localstack/devcontainer-feature/localstack-cli:[^"]*"#"./localstack-cli"#' "${SRC_DIR}/.devcontainer/devcontainer.json"
 }
 
 function create_scenario {
@@ -89,6 +95,8 @@ function create_scenario {
     gen_config
 
     popd
+
+    use_local_feature
 
     echo
     echo "🏗️ Building Dev Container - ${SCENARIO}"

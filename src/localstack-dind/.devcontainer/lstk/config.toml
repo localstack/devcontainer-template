@@ -1,0 +1,21 @@
+# lstk configuration for this dev container.
+# ~/.config/lstk/config.toml links to this file, so every lstk command in the container uses it.
+# Edit it and run `lstk restart` to apply changes.
+# Reference: https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/configuration/
+
+[[containers]]
+type = "aws"
+# LocalStack image tag, e.g. "latest", "stable" or "2026.10".
+tag = "${templateOption:version}"
+port = "4566"
+# /data is a Docker volume mounted by devcontainer.json.
+volumes = ["/data:/var/lib/localstack"]
+env = ["devcontainer"]
+
+# LocalStack configuration: https://docs.localstack.cloud/aws/customization/configuration-options/
+[env.devcontainer]
+DEBUG = "${templateOption:debug}"
+LS_LOG = "${templateOption:logLevel}"
+PERSISTENCE = "${templateOption:persistence}"
+ENFORCE_IAM = "${templateOption:enforceIam}"
+AUTO_LOAD_POD = "${templateOption:loadPods}"
