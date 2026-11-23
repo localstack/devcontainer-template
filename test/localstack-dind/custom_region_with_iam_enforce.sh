@@ -6,7 +6,7 @@ waitForLocalStack
 
 # Scenario specific tests
 check "lstk version" lstk --version
-check "default region" lstk aws sqs create-queue --queue-name test-queue | grep eu-central-1
+check "default region" 'lstk aws sqs create-queue --queue-name test-queue | grep eu-central-1'
 
 lstk aws iam create-user --user-name test
 lstk aws iam put-user-policy --user-name test --policy-name restrict-queue-list --policy-document "$(cat <<EOF

@@ -20,8 +20,8 @@
 	// if needed add features manually, e.g. ghcr.io/devcontainers/features/aws-cli, ghcr.io/devcontainers/features/terraform
 	"onCreateCommand": "bash .devcontainer/install-lstk.sh .devcontainer/lstk.toml",
 
-	// 👇 Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "${templateOption:startup} && lstk --non-interactive start --timeout 3m || true",
+	// 👇 Start LocalStack once the Docker daemon (started in the background by the docker-in-docker feature) is ready
+	"postCreateCommand": "if ${templateOption:startup}; then timeout 120 sh -c 'until docker info > /dev/null 2>&1; do sleep 1; done' && lstk --non-interactive start --timeout 3m; fi",
 	"mounts": [
 		{
 			// to persist build data and images

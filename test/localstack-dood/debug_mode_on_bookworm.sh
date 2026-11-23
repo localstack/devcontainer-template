@@ -3,7 +3,7 @@ cd $(dirname "$0")
 source test-utils.sh
 
 # Scenario specific tests
-check "distro" lsb_release -c | grep "bookworm"
+check "distro" 'lsb_release -c | grep bookworm'
 waitForLocalStack
 check "localstack running" lstk --non-interactive status
 check "debug enabled" "curl -s http://localhost.localstack.cloud:4566/_localstack/diagnose; echo"
