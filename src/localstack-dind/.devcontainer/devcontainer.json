@@ -3,46 +3,33 @@
 	"image": "mcr.microsoft.com/devcontainers/base:${templateOption:imageVariant}",
 
 	"remoteEnv": {
-		// Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
-		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required for Pro, not processed via template due to security reasons
-		"LOCALSTACK_API_KEY": "${localEnv:LOCALSTACK_API_KEY}",
-		// LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-		"ACTIVATE_PRO": ${templateOption:usePro},
-		"DEBUG": ${templateOption:debug},
-		"LS_LOG": "${templateOption:logLevel}",
-		"PERSISTENCE": ${templateOption:persistence},
-		"AWS_ENDPOINT_URL": "http://localhost.localstack.cloud:4566",
-		"AUTO_LOAD_POD": "${templateOption:loadPods}",
-		"ENFORCE_IAM": ${templateOption:enforceIam},
+		// LocalStack Auth Token (required to start LocalStack): https://docs.localstack.cloud/aws/getting-started/auth-token/
+		"LOCALSTACK_AUTH_TOKEN": "${localEnv:LOCALSTACK_AUTH_TOKEN}",  // required, not processed via template due to security reasons
 		"AWS_REGION": "${templateOption:defaultRegion}",
-		"AWS_DEFAULT_REGION": "${templateOption:defaultRegion}",
-		"IMAGE_NAME": "localstack/localstack-pro:${templateOption:version}",
-		"LOCALSTACK_VOLUME_DIR": "/data"
+		"AWS_DEFAULT_REGION": "${templateOption:defaultRegion}"
+		// LocalStack itself is configured in .devcontainer/lstk.toml
 	},
 
 	// 👇 Features to add to the Dev Container. More info: https://containers.dev/implementors/features.
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
-			"version": "${templateOption:version}",
-			"awslocal": ${templateOption:awslocal},  // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
-			"cdklocal": ${templateOption:cdklocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
-			"pulumilocal": ${templateOption:pulumilocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
-			"samlocal": ${templateOption:samlocal},  // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
-			"tflocal": ${templateOption:tflocal}  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
-		}
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 
+	// 👇 Install lstk, the LocalStack CLI: https://github.com/localstack/lstk
+	// lstk also proxies aws, terraform, cdk, sam and az commands to LocalStack. The wrapped tools are not installed,
+	// if needed add features manually, e.g. ghcr.io/devcontainers/features/aws-cli, ghcr.io/devcontainers/features/terraform
+	"onCreateCommand": "bash .devcontainer/install-lstk.sh .devcontainer/lstk.toml",
+
 	// 👇 Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "type localstack; ${templateOption:startup} && localstack start -d || true",
+	"postCreateCommand": "${templateOption:startup} && lstk --non-interactive start --timeout 3m || true",
 	"mounts": [
 		{
 			// to persist build data and images
 			"source": "dind-var-lib-docker",
 			"target": "/var/lib/docker",
 			"type": "volume"
-		}, 
-		{ 
+		},
+		{
 			"source": "${templateOption:volumePath}",
 			"target": "/data",
 			"type": "bind",

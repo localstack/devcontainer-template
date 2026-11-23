@@ -31,3 +31,14 @@ reportResults() {
         exit 0
     fi
 }
+
+# Replacement for `localstack wait`: polls `lstk status` until LocalStack is up (default timeout 60s)
+waitForLocalStack() {
+    local timeout=${1:-60}
+    for _ in $(seq "$timeout"); do
+        lstk --non-interactive status > /dev/null 2>&1 && return 0
+        sleep 1
+    done
+    echoStderr "LocalStack did not become ready within ${timeout}s"
+    return 1
+}

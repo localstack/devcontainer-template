@@ -4,8 +4,7 @@ source test-utils.sh
 
 # Template specific tests
 check "distro" lsb_release -c | grep "jammy"
-check "localstack status" localstack status
-check "localstack stops" localstack stop
+check "localstack status" lstk --non-interactive status
 
 # Report result
 reportResults

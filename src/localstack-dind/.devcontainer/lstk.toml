@@ -1,0 +1,18 @@
+# lstk configuration, linked to ~/.config/lstk/config.toml on container creation.
+# Reference: https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/configuration/
+[[containers]]
+type = "aws"
+tag = "${templateOption:version}"
+port = "4566"
+container_name = "localstack-main"
+# Bind mounted from the host (see "mounts" in devcontainer.json)
+volume = "/data"
+env = ["devcontainer"]
+
+# LocalStack configuration passed to the container: https://docs.localstack.cloud/references/configuration/
+[env.devcontainer]
+DEBUG = "${templateOption:debug}"
+LS_LOG = "${templateOption:logLevel}"
+PERSISTENCE = "${templateOption:persistence}"
+ENFORCE_IAM = "${templateOption:enforceIam}"
+AUTO_LOAD_POD = "${templateOption:loadPods}"

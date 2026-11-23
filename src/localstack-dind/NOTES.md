@@ -1,13 +1,14 @@
 This version of the Template starts up LocalStack in an internal Docker service in the DevContainer, hence we set a volume by default for data persistence.
 As a result the newly built DevContainers do not necessarily need to re-download images as long this volume exists on the system.  
-Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data (`LOCALSTACK_VOLUME_DIR`).
+Additionally the DevContainer bind mounts a folder from the host system as `/data`, which will be used to store LocalStack data.
 
-The Template adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular *Local Tools™*.
-Currently this calls for a **Debian-based** DevContainer image.
+The Template installs [lstk](https://github.com/localstack/lstk), the LocalStack CLI. Besides managing LocalStack, lstk proxies `aws`, `terraform`, `cdk`, `sam` and `az` commands to LocalStack (e.g. `lstk aws s3 ls`). The wrapped tools themselves need to be added separately, e.g. via the `ghcr.io/devcontainers/features/aws-cli` Feature.
 
-LocalStack in this variation is controlled via the LocalStack CLI and some env variables that you can adjust or expand in the `devcontainer.json` file's `remoteEnv` block.
+LocalStack in this variation is started with `lstk start` after the DevContainer is created and is controlled with lstk (`lstk status`, `lstk stop`, `lstk logs`, ...).
+The image version and the LocalStack configuration live in `.devcontainer/lstk.toml`, which is linked as the lstk config (`~/.config/lstk/config.toml`); add further LocalStack variables to its `[env.devcontainer]` section.
 For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
 
-## Use LocalStack Pro
+## Auth Token
 
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the Template.
+An Auth Token is required to start LocalStack. Set the `LOCALSTACK_AUTH_TOKEN` environment variable on your host system, it will be automatically picked up by the Template.
+You can find your Auth Token in the [LocalStack Web Application](https://app.localstack.cloud/workspace/auth-token).

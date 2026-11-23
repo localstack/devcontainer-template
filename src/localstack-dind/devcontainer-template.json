@@ -17,31 +17,6 @@
             ],
             "default": "jammy"
         },
-        "awslocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for AWS CLI:",
-            "default": "false"
-        },
-        "cdklocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for CDK:",
-            "default": "false"
-        },
-        "pulumilocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for Pulumi:",
-            "default": "false"
-        },
-        "samlocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for AWS SAM CLI:",
-            "default": "false"
-        },
-        "tflocal": {
-            "type": "boolean",
-            "description": "Install LocalStack wrapper for Terraform:",
-            "default": "false"
-        },
         "logLevel": {
             "type": "string",
             "description": "Set LocalStack log level:",
@@ -58,53 +33,49 @@
         },
         "debug": {
             "type": "boolean",
-            "descripiton": "Enable LocalStack debugging:",
+            "description": "Enable LocalStack debugging:",
             "default": "false"
         },
         "persistence": {
             "type": "boolean",
-            "descripiton": "Enable persistence in LocalStack:",
-            "default": "false"
-        },
-        "usePro": {
-            "type": "boolean",
-            "descripiton": "Enable LocalStack Pro:",
+            "description": "Enable persistence in LocalStack:",
             "default": "false"
         },
         "version": {
             "type": "string",
-            "descripiton": "Use LocalStack version:",
+            "description": "LocalStack image version:",
             "proposals": [
                 "latest",
-                "3.6.0",
-                "3.5.0",
-                "3.4.0",
-                "3.3.0",
-                "3.2.0",
-                "3.1.0",
-                "3.0.2",
-                "3.0.1"
+                "2026.10.8",
+                "2026.9.1",
+                "2026.8.5",
+                "2026.7.6",
+                "2026.6.4",
+                "2026.5.4",
+                "2026.4.3",
+                "2026.3.0",
+                "4.14.0"
             ],
             "default": "latest"
         },
         "loadPods": {
             "type": "string",
-            "descripiton": "Load Cloud Pods at start-up (comma-separated list):",
+            "description": "Load Cloud Pods at start-up (comma-separated list):",
             "default": " "
         },
         "volumePath": {
             "type": "string",
-            "descripiton": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
+            "description": "LocalStack volume location on the host (currently only local (bind) mounts recommended):",
             "default": "./.volume"
         },
         "enforceIam": {
             "type": "boolean",
-            "descripiton": "Enforce IAM:",
+            "description": "Enforce IAM:",
             "default": "false"
         },
         "defaultRegion": {
             "type": "string",
-            "descripiton": "Default AWS region:",
+            "description": "Default AWS region:",
             "proposals": [
                 "us-east-1",
                 "us-east-2",

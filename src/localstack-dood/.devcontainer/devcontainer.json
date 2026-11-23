@@ -6,14 +6,12 @@
 
 	// 👇 Features to add to the Dev Container. More info: https://containers.dev/implementors/features.
 	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-		"ghcr.io/localstack/devcontainer-feature/localstack-cli:latest": {
-			"version": "${templateOption:version}",
-			"awslocal": ${templateOption:awslocal},  // if true, add in features manually: ghcr.io/devcontainers/features/aws-cli
-			"cdklocal": ${templateOption:cdklocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/aws-cdk
-			"pulumilocal": ${templateOption:pulumilocal},  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/pulumi
-			"samlocal": ${templateOption:samlocal},  // if true, add in features manually: ghcr.io/customink/codespaces-features/sam-cli
-			"tflocal": ${templateOption:tflocal}  // if true, add in features manually: ghcr.io/devcontainers-contrib/features/terraform-asdf
-		}
-	}
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+	},
+
+	// 👇 Install lstk, the LocalStack CLI: https://github.com/localstack/lstk
+	// lstk talks to the LocalStack container from docker-compose.yml via AWS_ENDPOINT_URL (set in .env) and proxies
+	// aws, terraform, cdk, sam and az commands to it. The wrapped tools are not installed,
+	// if needed add features manually, e.g. ghcr.io/devcontainers/features/aws-cli, ghcr.io/devcontainers/features/terraform
+	"onCreateCommand": "bash .devcontainer/install-lstk.sh"
 }
