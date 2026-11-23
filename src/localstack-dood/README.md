@@ -1,3 +1,4 @@
+
 # LocalStack Docker-outside-of-Docker (localstack-dood)
 
 Runs LocalStack as a Docker Compose service next to the dev container. lstk talks to it over the shared network.
@@ -12,7 +13,7 @@ Runs LocalStack as a Docker Compose service next to the dev container. lstk talk
 | debug | Enable LocalStack debug mode (DEBUG): | boolean | false |
 | persistence | Persist LocalStack state across restarts (PERSISTENCE): | boolean | false |
 | enforceIam | Enforce IAM policies (ENFORCE_IAM): | boolean | false |
-| loadPods | Cloud Pods to load at start-up, comma-separated (AUTO_LOAD_POD): | string |  |
+| loadPods | Cloud Pods to load at start-up, comma-separated (AUTO_LOAD_POD): | string | - |
 | defaultRegion | Default AWS region for the AWS CLI and SDKs: | string | us-east-1 |
 | networkName | Docker network shared by LocalStack, the dev container and Lambda containers: | string | ls |
 | networkCidr | LocalStack network CIDR: | string | 10.0.2.0/24 |

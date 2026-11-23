@@ -1,3 +1,4 @@
+
 # LocalStack Docker-in-Docker (localstack-dind)
 
 Runs LocalStack inside the dev container's own Docker daemon and manages it with lstk.
@@ -12,7 +13,7 @@ Runs LocalStack inside the dev container's own Docker daemon and manages it with
 | debug | Enable LocalStack debug mode (DEBUG): | boolean | false |
 | persistence | Persist LocalStack state across restarts (PERSISTENCE): | boolean | false |
 | enforceIam | Enforce IAM policies (ENFORCE_IAM): | boolean | false |
-| loadPods | Cloud Pods to load at start-up, comma-separated (AUTO_LOAD_POD): | string |  |
+| loadPods | Cloud Pods to load at start-up, comma-separated (AUTO_LOAD_POD): | string | - |
 | defaultRegion | Default AWS region for the AWS CLI and SDKs: | string | us-east-1 |
 | startup | Start LocalStack with lstk when the container starts: | boolean | true |
 
