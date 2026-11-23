@@ -23,8 +23,20 @@ function merge {
     rm .devcontainer/devcontainer.json.bak
 }
 
+# Optional: test against a local checkout of the LocalStack Feature instead of
+# the published one, e.g. LOCAL_FEATURE_DIR=../devcontainer-feature/src/localstack-cli
+function use_local_feature {
+    if [ -z "${LOCAL_FEATURE_DIR:-}" ] ; then
+        return
+    fi
+    echo "(!) Using local LocalStack Feature from '${LOCAL_FEATURE_DIR}'"
+    cp -R "${LOCAL_FEATURE_DIR}" "${SRC_DIR}/.devcontainer/localstack-cli"
+    sed -i -e 's#"ghcr.io/localstack/devcontainer-feature/localstack-cli:[^"]*"#"./localstack-cli"#' "${SRC_DIR}/.devcontainer/devcontainer.json"
+}
+
 SRC_DIR="/tmp/${TEMPLATE_ID}"
 cp -R "src/${TEMPLATE_ID}" "${SRC_DIR}"
+LOCAL_FEATURE_DIR="${LOCAL_FEATURE_DIR:+$(cd "${LOCAL_FEATURE_DIR}" && pwd)}"
 
 pushd "${SRC_DIR}"
 
@@ -44,22 +56,16 @@ if [ "${OPTION_PROPERTY}" != "" ] && [ "${OPTION_PROPERTY}" != "null" ] ; then
             fi
             
             if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
-            OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
-            fi
-
-            # For empty default values use " "
-            if [ "${OPTION_VALUE}" = "" ] || [ "${OPTION_VALUE}" = "null" ] ; then
-                echo "Template '${TEMPLATE_ID}' is missing a default value for option '${OPTION}'"
-                exit 1
+                if [ "$(jq -r --arg o "${OPTION}" '.options[$o] | has("default")' devcontainer-template.json)" != "true" ] ; then
+                    echo "Template '${TEMPLATE_ID}' is missing a default value for option '${OPTION}'"
+                    exit 1
+                fi
+                OPTION_VALUE=$(jq -r ".options | .${OPTION} | .default" devcontainer-template.json)
             fi
 
             echo "(!) Replacing '${OPTION_KEY}' with '${OPTION_VALUE}'"
             OPTION_VALUE_ESCAPED=$(sed -e 's/[]\/$*.^[]/\\&/g' <<<"${OPTION_VALUE}")
             find ./ -type f -print0 | xargs -0 sed -i "s/${OPTION_KEY}/${OPTION_VALUE_ESCAPED}/g"
-            
-            if [ "${OPTION}" == "volumePath" ] ; then
-                mkdir -p ${SRC_DIR}/${OPTION_VALUE}
-            fi
 
             unset OPTION_VALUE
         done
@@ -72,6 +78,8 @@ fi
 
 popd
 
+use_local_feature
+
 TEST_DIR="test/${TEMPLATE_ID}"
 if [ -d "${TEST_DIR}" ] ; then
     echo "(*) Copying test folder"
@@ -82,8 +90,10 @@ if [ -d "${TEST_DIR}" ] ; then
 fi
 
 export DOCKER_BUILDKIT=1
-echo "(*) Installing @devcontainer/cli"
-npm install -g @devcontainers/cli
+if ! type devcontainer &> /dev/null ; then
+    echo "(*) Installing @devcontainer/cli"
+    npm install -g @devcontainers/cli
+fi
 
 echo "Building Dev Container"
 ID_LABEL="test-container=${TEMPLATE_ID}"

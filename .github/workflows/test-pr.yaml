@@ -6,54 +6,80 @@ on:
       - LICENSE
       - .gitkeep
       - .gitignore
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - .gitkeep
+      - .gitignore
+  workflow_dispatch:
+    inputs:
+      feature-ref:
+        description: 'Test against this git ref of localstack/devcontainer-feature instead of the published Feature'
+        required: false
+        default: ''
 
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      templates: ${{ steps.filter.outputs.changes }}
+      # Pull requests test the templates they touch. Pushes to main and manual runs test all of them.
+      templates: ${{ github.event_name == 'pull_request' && steps.filter.outputs.changes || '["localstack-dind","localstack-dood"]' }}
     steps:
-      - uses: dorny/paths-filter@v2
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
         id: filter
+        if: ${{ github.event_name == 'pull_request' }}
         with:
           filters: |
-            localstack-dind: ./**/localstack-dind/**
-            localstack-dood: ./**/localstack-dood/**
+            localstack-dind:
+              - 'src/localstack-dind/**'
+              - 'test/localstack-dind/**'
+              - 'test/test-utils/**'
+              - '.github/**'
+            localstack-dood:
+              - 'src/localstack-dood/**'
+              - 'test/localstack-dood/**'
+              - 'test/test-utils/**'
+              - '.github/**'
 
   smoke-test:
     needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.templates != '[]' }}
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         templates: ${{ fromJSON(needs.detect-changes.outputs.templates) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Smoke test for '${{ matrix.templates }}'
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
-        id: smoke_test
         uses: ./.github/actions/smoke-test
         with:
           template: "${{ matrix.templates }}"
+          feature-ref: ${{ inputs.feature-ref || 'migrate-to-lstk' }}
 
   scenario-test:
     needs: [detect-changes]
+    if: ${{ needs.detect-changes.outputs.templates != '[]' }}
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         templates: ${{ fromJSON(needs.detect-changes.outputs.templates) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Scenario test(s) for '${{ matrix.templates }}'
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
-        id: scenario_test
         uses: ./.github/actions/scenario-test
         with:
           template: "${{ matrix.templates }}"
+          feature-ref: ${{ inputs.feature-ref || 'migrate-to-lstk' }}

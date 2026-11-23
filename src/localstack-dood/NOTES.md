@@ -1,18 +1,51 @@
-This version of the Template starts up LocalStack as a separate container in the same Docker network using the host system's Docker socket.
+This Template runs LocalStack as a separate `localstack` service in Docker Compose, next to the dev container, using the host's Docker daemon.
+Both containers share a Docker network, and LocalStack's DNS server resolves `localhost.localstack.cloud` to the LocalStack container.
+The Template adds the [LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature) for [`lstk`](https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/), the AWS CLI Feature and the docker-outside-of-docker Feature.
 
-To control LocalStack's behaviour adjust the provided `.env` file which will be loaded both into LocalStack and the created DevContainer after rebuild.
-For further customisation you can edit the provided `Dockerfile` and/or the `devcontainer.json` file.
-Or add additional services by modifying the provided `docker-compose.yml` file.
-For further LocalStack configuration options please consult our [official documentation](https://docs.localstack.cloud/references/configuration/).
+## Auth token
 
-The Template adds automatically the [official LocalStack DevContainer Feature](https://github.com/localstack/devcontainer-feature), which installs the CLI and by demand the most popular *Local Tools™*.
-Currently this calls for a **Debian-based** DevContainer image.
+Set `LOCALSTACK_AUTH_TOKEN` on the host before you build the container.
+Docker Compose passes it to the `localstack` service and the dev container. It is never written into your files.
+See the [auth token documentation](https://docs.localstack.cloud/aws/getting-started/auth-token/).
 
->[!WARNING]
-> In this Template version however the LocalStack CLI provides the `start` and `stop` options do not control the LocalStack container with them as that would result in name resolution issues with the container.
->
-> In case you've made this mistake by accident, try running `docker compose -f <DEV_CONTAINER_CONFIG_LOCATION>/docker-compose.yml up -d localstack` or rebuild the container.
+## How it works
 
-#### Use LocalStack Pro
+| File | Purpose |
+| --- | --- |
+| `.devcontainer/docker-compose.yml` | The `localstack` and `app` services and their shared network. |
+| `.devcontainer/.env` | LocalStack variables for the `localstack` service. |
+| `.devcontainer/Dockerfile` | Base image of the dev container. |
+| `.devcontainer/devcontainer.json` | Features and lifecycle commands. |
+| `.devcontainer/lstk/post-start.sh` | Waits for LocalStack and prints `lstk status`. |
 
-Set `usePro: true` and set on your host system the `LOCALSTACK_AUTH_TOKEN` or the `LOCALSTACK_API_KEY` environment variable, this will be automatically picked up by the `.env` file.
+Docker Compose owns the LocalStack container, not `lstk`.
+`LSTK_ENDPOINT_URL` points `lstk` at the `localstack` service, so `lstk status`, `lstk aws`, `lstk terraform`, `lstk cdk`, `lstk sam` and the snapshot commands work as usual.
+`lstk start`, `lstk stop`, `lstk restart` and `lstk logs` refuse to run against an external endpoint.
+Use `docker restart localstack-main` and `docker logs localstack-main` instead, or rebuild the container.
+
+Lambda functions and other containers that LocalStack starts join the same network through `LAMBDA_DOCKER_NETWORK`.
+LocalStack state is stored in the `volumePath` folder, relative to `.devcontainer/`.
+For more LocalStack variables, add them to `.env` and see the [configuration reference](https://docs.localstack.cloud/aws/customization/configuration-options/).
+
+## Using LocalStack
+
+```bash
+lstk status                 # emulator status and deployed resources
+lstk aws s3 mb s3://demo    # AWS CLI against LocalStack (replaces awslocal)
+aws s3 ls                   # plain aws uses the localstack profile (AWS_PROFILE=localstack)
+```
+
+For Terraform, AWS CDK or AWS SAM, add the tool's Feature and use `lstk terraform`, `lstk cdk` or `lstk sam`:
+
+| Command | Feature |
+| --- | --- |
+| `lstk terraform`, `lstk tf` | `ghcr.io/devcontainers/features/terraform:1` |
+| `lstk cdk` | `ghcr.io/devcontainers/features/node:1` and `ghcr.io/devcontainers-extra/features/aws-cdk:2` |
+| `lstk sam` | `ghcr.io/customink/codespaces-features/sam-cli:1` |
+
+## Migrating from 0.x
+
+Version 1.0.0 replaces the legacy `localstack` CLI with `lstk`.
+The `awslocal`, `cdklocal`, `pulumilocal`, `samlocal`, `tflocal` and `usePro` options are gone.
+LocalStack now always runs the `localstack/localstack-pro` image, which needs an auth token.
+See the [lstk migration guide](https://docs.localstack.cloud/aws/developer-tools/running-localstack/lstk/migration/).
